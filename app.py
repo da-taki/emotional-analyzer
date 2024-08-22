@@ -148,21 +148,24 @@ emotion_keywords = {
                   'quandary', 'unsure', 'hesitant', 'uncertainty', 'disorientation', 'complexity', 'vexation', 'trouble', 
                   'incoherent', 'bewilder', 'bafflement', 'mystification', 'complex', 'baffle', 'vex', 'bewildered', 'trouble', 
                   'discomfort', 'mystify', 'puzzlement', 'fuzziness', 'mystified', 'incomprehension'],
-    'joy' : ['happiness', 'elation', 'bliss', 'contentment', 'delight', 'cheerfulness',
-    'ecstasy', 'jubilation', 'pleasure', 'exhilaration', 'enthusiasm', 'glee',
-    'gratitude', 'satisfaction', 'radiance', 'joy', 'mirth', 'rapture',
-    'upbeat', 'positive', 'euphoria', 'joyous', 'celebration', 'hilarious',
-    'jovial', 'smile', 'laughter', 'bright', 'optimistic', 'buoyant',
-    'serenity', 'gleaming', 'triumph', 'cheer', 'elated', 'content',
-    'happy', 'enjoyment', 'sublime', 'festive', 'animated', 'vivacious',
-    'gleeful', 'jubilant', 'overjoyed', 'pleased', 'radiant', 'rhapsody',
-    'joyful', 'brightened', 'tickled', 'satisfied', 'pleasurable', 'blissful',
-    'glad', 'cheery', 'effervescent', 'merry', 'bright-eyed', 'exultant',
-    'delighted', 'buoyed', 'spirit', 'joyousness', 'upbeat', 'gratified',
-    'heartwarming', 'ecstatic', 'happy-go-lucky', 'inspired', 'cheerful',
-    'radiant', 'contented', 'brighten', 'spirit-lifting', 'positive-vibes',
-    'happy-hearted', 'elation-filled', 'exhilarated', 'happy-faced', 'gleam',
-    'vibrant', 'uplifted', 'joviality', 'joyful-heart', 'festivity']
+    'ecstasy': ['bliss', 'rapture', 'elation', 'joy', 'delight', 'euphoria', 'happiness', 
+                'exhilaration', 'exuberance', 'jubilation', 'glee', 'blissfulness', 
+                'nirvana', 'paradise', 'contentment', 'beatitude', 'felicity', 'raptness', 
+                'satisfaction', 'intoxication', 'thrill', 'elevation', 'enchantment', 
+                'ecstatics', 'blissout', 'ravishment', 'transport', 'blissful', 'splendor', 
+                'gladness', 'mirth', 'cheerfulness', 'glory', 'wonder', 'exaltation', 
+                'pleasure', 'enthusiasm', 'serenity', 'transcendence', 'blissfulness', 
+                'zest', 'fervor', 'high spirits', 'spirituality', 'intense joy', 
+                'profound happiness', 'divine joy', 'rapturous', 'ardor', 'blithe', 
+                'divine', 'glorious', 'godlike', 'transfixing', 'shining', 'bright', 
+                'splendid', 'ethereal', 'elated', 'elevated', 'enchanted', 'joyous', 
+                'delighted', 'infatuation', 'engrossed', 'intense pleasure', 'rapturous joy', 
+                'ecstatic', 'overjoyed', 'radiant', 'intoxicating', 'exalted', 'inspired', 
+                'invigorated', 'bliss state', 'joyfulness', 'dazzling', 'resplendent', 
+                'vibrant', 'full of life', 'animated', 'blissful peace', 'nirvana state', 
+                'heavenly', 'sublime', 'divinity', 'perfect happiness', 'in bliss', 
+                'at peace', 'elevated state', 'sublimity', 'celestial', 'otherworldly', 
+                'pure joy', 'rapt']
 }
 
 # Function to determine the most present emotion based on keyword frequency
@@ -176,15 +179,15 @@ def analyze_emotion(text):
                 if SequenceMatcher(None, word, keyword).ratio() > 0.8:  # Check similarity
                     emotion_counts[emotion] += 1
 
-    # Add random emotion with 20% to pie chart
+    # Add random emotion with 10% to pie chart
     total_emotion_score = sum(emotion_counts.values())
-    random_emotion = random.choice(list(emotion_keywords.keys()))
+    if total_emotion_score > 0:
+        random_emotion = random.choice(list(emotion_keywords.keys()))
+        emotion_counts[random_emotion] += max(int(total_emotion_score * 0.01), 0.1)
     
-    # Ensure the random emotion is the only one on the chart and capped at 20%
-    emotion_counts = defaultdict(int)
-    emotion_counts[random_emotion] = max(int(total_emotion_score * 0.2), 1)  # Ensure at least 1% if no other emotion
-
-    return emotion_counts, random_emotion
+    # Determine dominant emotion
+    dominant_emotion = max(emotion_counts, key=emotion_counts.get, default=None)
+    return emotion_counts, dominant_emotion
 
 @app.route('/')
 def index():
@@ -195,17 +198,15 @@ def analyze():
     text = request.form['text']
     sentiment_score = sia.polarity_scores(text)['compound']
     
+    # Sentiment analysis result
+    sentiment_result = (
+        "Overall sentiment is positive. You're feeling good!" if sentiment_score > 0.4 else
+        "Overall sentiment is negative. Something might be troubling you." if sentiment_score < -0.4 else
+        "Sentiment is neutral. Nothing too intense in your mood."
+    )
+
     # Analyze emotion
     emotion_counts, dominant_emotion = analyze_emotion(text)
-    if dominant_emotion == 'confusion':
-        sentiment_result = "Overall sentiment is negative. Confusion often leads to negative feelings."
-    else:
-        sentiment_result = (
-            "Overall sentiment is positive. You're feeling good!" if sentiment_score > 0.5 else
-            "Overall sentiment is negative. Something might be troubling you." if sentiment_score < -0.5 else
-            "Sentiment is neutral. Nothing too intense in your mood."
-        )
-
     emotion_result = f"Dominant emotion detected: {dominant_emotion.capitalize()}" if dominant_emotion else "No dominant emotion detected."
     emotion_result += "\n\n" + get_emotion_tips(dominant_emotion) if dominant_emotion else ""
 
@@ -225,7 +226,6 @@ def analyze():
 
     return render_template('index.html', sentiment=sentiment_result, result=emotion_result, plot_url=plot_url)
 
-
 @app.route('/random_situation')
 def random_situation():
     situation = random.choice(situations)
@@ -237,16 +237,6 @@ def analyze_situation():
     
     # Analyze emotion
     emotion_counts, dominant_emotion = analyze_emotion(text)
-    if dominant_emotion == 'confusion':
-        sentiment_result = "Overall sentiment is negative. Confusion often leads to negative feelings."
-    else:
-        sentiment_score = sia.polarity_scores(text)['compound']
-        sentiment_result = (
-            "Overall sentiment is positive. You're feeling good!" if sentiment_score > 0.5 else
-            "Overall sentiment is negative. Something might be troubling you." if sentiment_score < -0.5 else
-            "Sentiment is neutral. Nothing too intense in your mood."
-        )
-
     emotion_result = f"Dominant emotion detected: {dominant_emotion.capitalize()}" if dominant_emotion else "No dominant emotion detected."
     emotion_result += "\n\n" + get_emotion_tips(dominant_emotion) if dominant_emotion else ""
 
@@ -266,51 +256,32 @@ def analyze_situation():
 
     return render_template('situation.html', situation=request.form['situation'], result=emotion_result, plot_url=plot_url)
 
-
 def get_emotion_tips(emotion):
     tips = {
-        'rage': (
-            "When dealing with rage, it's crucial to find healthy outlets for your anger. Try taking deep breaths or practicing mindfulness to calm yourself. "
-            "Understanding the root cause of your anger can help you address it more effectively. Consider talking with someone you trust or seeking professional guidance if needed. "
-            "Engaging in physical activities like exercise can also help release pent-up frustration."
-        ),
-        'despair': (
-            "In moments of despair, reaching out for support is vital. Surround yourself with friends and family who can offer encouragement and understanding. "
-            "Professional counseling can provide a safe space to work through your feelings and develop coping strategies. "
-            "Engage in activities that bring you comfort or joy, even if they seem minor. Taking small steps toward self-care can gradually improve your outlook."
-        ),
-        'grief': (
-            "Grief is a deeply personal experience, and it's important to give yourself permission to feel and process your emotions. Surround yourself with a supportive network of loved ones. "
-            "Consider joining a support group where you can share your experience with others who understand. Allow yourself time and patience as you navigate through this challenging period. "
-            "Finding ways to honor and remember what you've lost can also be a meaningful part of the healing process."
-        ),
-        'fear': (
-            "Facing fear involves understanding what triggers it and taking gradual steps to confront it. Start by breaking the fear down into smaller, manageable parts and address each one at your own pace. "
-            "Practicing relaxation techniques such as deep breathing or meditation can help reduce anxiety. It's also helpful to talk to someone you trust or seek professional help if fear is overwhelming."
-        ),
-        'disgust': (
-            "When feeling disgust, it's often beneficial to identify the source and address it directly if possible. If you can, remove yourself from the situation causing the reaction. "
-            "Engage in activities that shift your focus to positive or enjoyable experiences. Talking with someone who can provide a different perspective might also help you process these feelings more effectively."
-        ),
-        'sadness': (
-            "Dealing with sadness involves acknowledging your emotions and seeking support from those around you. Engaging in self-care practices and activities that bring you comfort can also be helpful. "
-            "It’s important to give yourself permission to rest and heal at your own pace. If sadness persists or feels overwhelming, consider reaching out to a mental health professional for additional support."
-        ),
-        'guilt': (
-            "Handling guilt starts with reflecting on the situation and understanding what led to your feelings. If possible, make amends or take actions to rectify the situation. "
-            "Forgiving yourself is crucial; everyone makes mistakes, and learning from them is part of personal growth. Talking with a trusted friend or counselor can also help you process and move past guilt."
-        ),
-        'confusion': (
-            "Confusion often arises from complex situations or a lack of clarity. Take some time to reflect on the source of your confusion and break down the problem into smaller, more manageable parts. "
-            "It can be helpful to write down your thoughts and questions to gain perspective. Seek advice from others who might offer clarity or different viewpoints. Engaging in activities that help you relax and clear your mind can also aid in resolving confusion."
-        ),
-        'joy': (
-            "When you're feeling joyful, it's a great opportunity to embrace and celebrate the positive emotions you're experiencing. Share your happiness with those around you, as spreading joy can enhance your own sense of well-being. "
-            "Engage in activities that amplify your joy, whether it’s pursuing hobbies, spending time with loved ones, or enjoying nature. Reflect on the sources of your happiness and consider how you can continue to foster such positive experiences in your life."
-        )
+        'ecstasy': "Embrace the Moment: Savor the feelings of joy and excitement. Let yourself be fully immersed in the experience."
+                   "\nShare the Joy: Spread the happiness by sharing your good news or positive energy with others."
+                   "\nReflect on Your Success: Think about what led to this feeling and how you can recreate it in the future.",
+        'admiration': "Express Your Gratitude: Let the person you admire know how much they inspire you. A sincere compliment can go a long way."
+                      "\nLearn from Them: Identify the qualities you admire and think about how you can incorporate them into your own life."
+                      "\nStay Humble: While it's great to admire others, remember to stay grounded and appreciate your own strengths too.",
+        'terror': "Breathe and Ground Yourself: Focus on deep breathing to help calm your nerves. Try to ground yourself in the present moment."
+                  "\nAssess the Situation: Determine if the fear is rational or if it's being amplified by your mind."
+                  "\nReach Out for Support: If terror overwhelms you, seek help from friends, family, or a professional.",
+        'amazement': "Appreciate the Wonder: Take a moment to soak in the beauty or significance of what amazed you."
+                     "\nShare Your Experience: Talk about it with others to relive the excitement and wonder."
+                     "\nKeep an Open Mind: Stay open to new experiences that can continue to amaze and inspire you.",
+        'grief': "Allow Yourself to Grieve: It's okay to feel sad and mourn your loss. Give yourself permission to feel the pain."
+                 "\nTalk to Someone: Sharing your feelings with friends, family, or a counselor can help ease the burden."
+                 "\nRemember the Good Times: Focus on positive memories to help cope with the sadness.",
+        'loathing': "Understand the Source: Reflect on why you feel such strong aversion. Is it justified or a result of misunderstanding?"
+                    "\nChannel the Energy: Use that intense emotion as motivation to address the underlying issue constructively."
+                    "\nPractice Empathy: Try to understand the perspective of the person or thing you loathe, it may help reduce the intensity of your feelings.",
+        'rage': "Take Deep Breaths: Calm yourself with slow, deep breathing to help control the intensity of your anger."
+                "\nStep Away: Remove yourself from the situation until you cool down and can think clearly."
+                "\nExpress Yourself Calmly: Once calm, communicate your feelings clearly and assertively without being confrontational.",
+        'confusion': "Confusion often arises from complex situations or a lack of clarity. Take some time to reflect on the source of your confusion and break down the problem into smaller, more manageable parts. It can be helpful to write down your thoughts and questions to gain perspective. Seek advice from others who might offer clarity or different viewpoints. Engaging in activities that help you relax and clear your mind can also aid in resolving confusion."
     }
-    return tips.get(emotion, "No tips available for this emotion.")
-
+    return tips.get(emotion, "No specific tips available for this emotion.")
 
 if __name__ == '__main__':
     app.run(debug=True)
