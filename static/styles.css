@@ -1,7 +1,7 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #2b2e4a; /* Dark Indigo background */
-    color: #f5f5f5; /* Very light grey text for contrast */
+    background-color: #121212; /* Greyish black background */
+    color: #e0e0e0; /* Light text color for contrast */
     margin: 0;
     padding: 0;
 }
@@ -11,14 +11,14 @@ body {
     max-width: 800px;
     margin: 2rem auto;
     padding: 2rem;
-    background-color: #53354a; /* Deep Rose background for container */
+    background-color: #1e1e1e; /* Slightly lighter background for container */
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
 h1 {
     text-align: center;
-    color: #19d3da; /* Bright Cyan color for headings */
+    color: #4CAF50; /* Green color for headings */
 }
 
 form {
@@ -30,18 +30,18 @@ textarea {
     width: 100%;
     padding: 1rem;
     margin-bottom: 1rem;
-    border: 1px solid #343a40; /* Darker grey border */
+    border: 1px solid #333; /* Darker border color */
     border-radius: 4px;
     resize: vertical;
     font-size: 1rem;
-    background-color: #343a40; /* Dark grey background for textarea */
-    color: #f5f5f5; /* Very light grey text */
+    background-color: #333; /* Dark background for textarea */
+    color: #e0e0e0; /* Light text color */
 }
 
 button {
     padding: 0.75rem;
-    background-color: #19d3da; /* Cyan button background */
-    color: #2b2e4a; /* Dark Indigo text on button */
+    background-color: #4CAF50; /* Green button background */
+    color: #fff;
     border: none;
     border-radius: 4px;
     font-size: 1rem;
@@ -49,7 +49,7 @@ button {
 }
 
 button:hover {
-    background-color: #15b7b9; /* Slightly darker Cyan on hover */
+    background-color: #45a049; /* Darker green on hover */
 }
 
 .result {
@@ -57,7 +57,7 @@ button:hover {
 }
 
 .result h2 {
-    color: #f5f5f5; /* Very light grey color for result headings */
+    color: #e0e0e0; /* Light color for result headings */
 }
 
 .result p {
@@ -72,6 +72,6 @@ button:hover {
 }
 
 .chart img {
-    border: 1px solid #343a40; /* Darker grey border for the chart */
+    border: 1px solid #333; /* Dark border color for the chart */
     border-radius: 8px;
 }
