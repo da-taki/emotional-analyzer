@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion Analyzer - Situation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Emotion Analyzer - Situation</h1>
+        <p>{{ situation }}</p>
+        <form action="/analyze_situation" method="post">
+            <textarea name="response" rows="6" placeholder="Enter your response here..."></textarea>
+            <input type="hidden" name="situation" value="{{ situation }}">
+            <button type="submit">Analyze</button>
+        </form>
+        {% if result %}
+            <div class="result">
+                <h2>Analysis Result</h2>
+                <p>{{ result }}</p>
+                {% if plot_url %}
+                    <div class="chart">
+                        <img src="data:image/png;base64,{{ plot_url }}" alt="Emotion Analysis Pie Chart">
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

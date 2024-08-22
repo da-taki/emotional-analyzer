@@ -1,0 +1,77 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #121212; /* Greyish black background */
+    color: #e0e0e0; /* Light text color for contrast */
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 80%;
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #1e1e1e; /* Slightly lighter background for container */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+h1 {
+    text-align: center;
+    color: #4CAF50; /* Green color for headings */
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+textarea {
+    width: 100%;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid #333; /* Darker border color */
+    border-radius: 4px;
+    resize: vertical;
+    font-size: 1rem;
+    background-color: #333; /* Dark background for textarea */
+    color: #e0e0e0; /* Light text color */
+}
+
+button {
+    padding: 0.75rem;
+    background-color: #4CAF50; /* Green button background */
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049; /* Darker green on hover */
+}
+
+.result {
+    margin-top: 2rem;
+}
+
+.result h2 {
+    color: #e0e0e0; /* Light color for result headings */
+}
+
+.result p {
+    font-size: 1.2rem;
+    line-height: 1.5;
+}
+
+.chart {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.chart img {
+    border: 1px solid #333; /* Dark border color for the chart */
+    border-radius: 8px;
+}
